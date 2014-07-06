@@ -1,3 +1,9 @@
+@.granted = false
+loaded = false
+$(document).on 'ready', () ->
+  Notification.requestPermission (status) ->
+    @.granted = true
+
 $(document).on 'page:change', () ->
   # send message
   $('#new_message').on 'ajax:success', (event, message) ->
@@ -28,6 +34,9 @@ $(document).on 'page:change', () ->
         code_block = $('[data-message-id="'+message.id+'"] pre code')[0]
         hljs.highlightBlock code_block if code_block
       $('#messages').scrollTop($('#messages')[0].scrollHeight) if scroll_flag && is_btm
+      console.log "messages.length = #{messages.length}; granted = #{granted}; loaded = #{loaded}"
+      new Notification("有 #{messages.length} 條新訊息") if messages.length > 0 && granted == true && loaded == true
+      loaded = true
     .always () ->
-      setTimeout(pull_messages, 1000)
+      setTimeout(pull_messages, 2000)
   pull_messages()
